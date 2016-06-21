@@ -1,0 +1,13 @@
+packages/
+obj/
+bin/
+temp/
+
+.settings/
+
+*.sln.ide/
+*.suo
+*proj.user
+.vs/
+
+*.build.log

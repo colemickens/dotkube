@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: List
+items:
+- kind: Deployment
+  apiVersion: extensions/v1beta1
+  metadata:
+    namespace: kube-system
+    name: kube-registry
+    labels:
+      k8s-app: kube-registry
+      version: v0
+      kubernetes.io/cluster-service: "true"
+      kubernetes.io/name: "KubeRegistry"
+  spec:
+    template:
+      metadata:
+        labels:
+          k8s-app: kube-registry
+          version: v0
+          kubernetes.io/cluster-service: "true"
+          kubernetes.io/name: "KubeRegistry"
+      spec:
+        containers:
+        - name: registry
+          image: registry:2
+          resources:
+            # keep request = limit to keep this container in guaranteed class
+            limits:
+              cpu: 100m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          env:
+          - name: REGISTRY_HTTP_ADDR
+            value: ':5000'
+          - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+            value: '/var/lib/registry'
+          ports:
+          - name: registry
+            containerPort: 5000
+            protocol: TCP
+- kind: DaemonSet
+  apiVersion: extensions/v1beta1
+  metadata:
+    namespace: kube-system
+    name: kube-registry-proxy
+    labels:
+      k8s-app: kube-registry-proxy
+      kubernetes.io/cluster-service: "true"
+      kubernetes.io/name: "KubeRegistry"
+  spec:
+    template:
+      metadata:
+        namespace: kube-system
+        name: kube-registry-proxy
+        labels:
+          k8s-app: kube-registry-proxy
+      spec:
+        containers:
+        - name: kube-registry-proxy
+          image: gcr.io/google_containers/kube-registry-proxy:0.3
+          resources:
+            limits:
+              cpu: 100m
+              memory: 50Mi
+          env:
+          - name: REGISTRY_HOST
+            value: 'kube-registry.kube-system.svc.cluster.local'
+          - name: REGISTRY_PORT
+            value: '5000'
+          - name: FORWARD_PORT
+            value: '5000'
+          ports:
+          - name: registry
+            containerPort: 5000
+            hostPort: 5000
+- kind: Service
+  apiVersion: v1
+  metadata:
+    namespace: kube-system
+    name: kube-registry
+    labels:
+      k8s-app: kube-registry
+      kubernetes.io/cluster-service: "true"
+      kubernetes.io/name: "KubeRegistry"
+  spec:
+    selector:
+      k8s-app: kube-registry
+    ports:
+    - name: registry
+      port: 5000
+      protocol: TCP

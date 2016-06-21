@@ -1,0 +1,9 @@
+<div class="card-container">
+  <md-card *ngFor="let counter of counters">
+    <md-card-title>{{counter.hostname}}</md-card-title>
+    <md-card-content class="secondary">
+        instance count: {{counter.instance_count}}
+        global count: {{counter.global_count}}
+    </md-card-content>
+  </md-card>
+</div>

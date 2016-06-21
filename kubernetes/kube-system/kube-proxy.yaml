@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: List
+items:
+- kind: DaemonSet
+  apiVersion: extensions/v1beta1
+  metadata:
+    namespace: kube-system
+    name: kube-proxy
+    labels:
+      k8s-app: kube-proxy
+      kubernetes.io/cluster-service: "true"
+      kubernetes.io/name: "KubeProxy"
+  spec:
+    template:
+      metadata:
+        namespace: kube-system
+        name: kube-proxy
+        labels:
+          k8s-app: kube-proxy
+      spec:
+        hostNetwork: true
+        containers:
+        - name: kube-registry-proxy
+          image: docker.io/colemickens/hyperkube-amd64:v1.3.0-azure
+          #image: gcr.io/google_containers/kube-proxy:v1.2.4
+          securityContext:
+            privileged: true
+          command:
+          #- kube-proxy
+          - /hyperkube
+          - proxy
+          - --kubeconfig=/srv/kubernetes/kubeconfig.json
+          - --proxy-mode=iptables
+          volumeMounts:
+          - name: srvkube
+            mountPath: /srv/kubernetes
+            readOnly: true
+          resources:
+            limits:
+              cpu: 100m
+              memory: 50Mi
+        volumes:
+        - name: srvkube
+          hostPath:
+            path: /srv/kubernetes
