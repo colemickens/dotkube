@@ -45,16 +45,22 @@ export class AppComponent {
 
   navitems: Object[] = [
     {
-      name: "Counters",
-      description: "View the counters",
-      icon: "assignment_ind",
+      name: "about",
+      description: "view the about info",
+      icon: "info",
+      path: "/about"
+    },
+    {
+      name: "counters",
+      description: "view the counters",
+      icon: "equalizer",
       path: "/counters"
     },
     {
-      name: "About",
-      description: "View the about info",
-      icon: "assignment ind",
-      path: "/about"
+      name: "guestbook",
+      description: "view the guestbook",
+      icon: "list",
+      path: "/guestbook"
     }
   ];
 }

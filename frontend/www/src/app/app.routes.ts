@@ -2,10 +2,12 @@ import { provideRouter, RouterConfig } from '@angular/router';
 
 import { AboutRoutes } from './about/about.routes';
 import { CountersRoutes } from './counters/counters.routes';
+import { GuestbookRoutes } from './guestbook/guestbook.routes';
 
 export const routes: RouterConfig = [
   ...CountersRoutes,
-  ...AboutRoutes
+  ...AboutRoutes,
+  ...GuestbookRoutes,
 ];
 
 export const APP_ROUTER_PROVIDERS = [
