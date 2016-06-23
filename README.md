@@ -4,7 +4,7 @@ This application serves an example of a full-stack application built for Kuberne
 
 See [demo](DEMO.md) for instructions on deploying this application to a Kubernetes cluster.
 
-The application is running at [http://polykube.io](polykube.io).
+The application is running at [polykube.io](http://polykube.io) and [api.polykube.io](http://api.polykube.io/counter).
 
 ## TODO
 
