@@ -1,15 +1,8 @@
 # polykube
 
-NOTE:
-  * This is still very much a work-in-progress
-  * Some features in the list are not completed.
-  * I will be resetting `master` and the repo history regularly
-
-## Overview
-
 This application serves an example of a full-stack application built for Kubernetes.
 
-See [demo](DEMO.md) for instructions on deploying this application.
+See [demo](DEMO.md) for instructions on deploying this application to a Kubernetes cluster.
 
 The application is running at [http://polykube.io](polykube.io).
 
@@ -59,3 +52,8 @@ The application is running at [http://polykube.io](polykube.io).
 
    Uses the Cluster DNS addon to resolve services at runtime in cluster.
    (The dotnet api simply connects to postgres via `tcp://db:5432`, redis via `tcp://redis:6379`, etc.)
+
+## Fine Print
+
+  * This is a work-in-progress
+  * I will be resetting `master` and the repo history regularly
