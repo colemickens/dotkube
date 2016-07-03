@@ -4,25 +4,21 @@ items:
 - kind: Deployment
   apiVersion: extensions/v1beta1
   metadata:
-    namespace: kube-system
     name: kube-registry
+    namespace: kube-system
     labels:
       k8s-app: kube-registry
       version: v0
-      kubernetes.io/cluster-service: "true"
-      kubernetes.io/name: "KubeRegistry"
   spec:
     template:
       metadata:
         labels:
           k8s-app: kube-registry
           version: v0
-          kubernetes.io/cluster-service: "true"
-          kubernetes.io/name: "KubeRegistry"
       spec:
         containers:
         - name: registry
-          image: registry:2
+          image: registry:2.5.0-rc.1
           resources:
             # keep request = limit to keep this container in guaranteed class
             limits:
@@ -43,17 +39,15 @@ items:
 - kind: DaemonSet
   apiVersion: extensions/v1beta1
   metadata:
-    namespace: kube-system
     name: kube-registry-proxy
+    namespace: kube-system
     labels:
       k8s-app: kube-registry-proxy
-      kubernetes.io/cluster-service: "true"
-      kubernetes.io/name: "KubeRegistry"
   spec:
     template:
       metadata:
-        namespace: kube-system
         name: kube-registry-proxy
+        namespace: kube-system
         labels:
           k8s-app: kube-registry-proxy
       spec:
@@ -78,8 +72,8 @@ items:
 - kind: Service
   apiVersion: v1
   metadata:
-    namespace: kube-system
     name: kube-registry
+    namespace: kube-system
     labels:
       k8s-app: kube-registry
       kubernetes.io/cluster-service: "true"

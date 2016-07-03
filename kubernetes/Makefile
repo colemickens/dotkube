@@ -2,15 +2,35 @@ NOTPARALLEL:
 
 all:
 	echo "please specify a command"
-	true
+	false
 
-#$(eval NAMESPACE ?= polykube-$(VERSION))
-
+# Prep
+# set vars and export them for sub-make invocations
 prep:
 	$(eval TEMPDIR = $(shell mktemp -d))
 	$(eval VERSION ?= $(shell git describe --always --dirty))
 	$(eval NAMESPACE ?= polykube)
-	$(eval REPO ?= localhost:5000/)
+	$(eval REPO ?= localhost:5000)
+	$(eval export VERSION)
+	$(eval export NAMESPACE)
+	$(eval export REPO)
+
+# Push commands
+# used to build and push images to the cluster
+push-aspnet: prep
+	$(MAKE) -C ../aspnet docker-push > ../aspnet.build.log 2>&1
+push-redis: prep
+	$(MAKE) -C ../redis docker-push > ../redis.build.log 2>&1
+push-postgres: prep
+	$(MAKE) -C ../postgres docker-push > ../postgres.build.log 2>&1
+push-frontend: prep
+	$(MAKE) -C ../frontend docker-push > ../frontend.build.log 2>&1
+push: push-aspnet push-redis push-postgres push-frontend
+
+
+# Prep Deploy
+# prepare the redis/postgres secrets
+prep-deploy: prep
 	$(eval REDIS_PASSWORD ?= $(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1 | base64 -w 0))
 	$(eval POSTGRES_PASSWORD ?= $(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1 | base64 -w 0))
 	cp -r polykube kube-system $(TEMPDIR)/
@@ -20,6 +40,7 @@ prep:
 	find "$(TEMPDIR)" -name "*.yaml" -print0 | xargs -0 sed -i -e "s|{{redis_password}}|$(REDIS_PASSWORD)|g"
 	find "$(TEMPDIR)" -name "*.yaml" -print0 | xargs -0 sed -i -e "s|{{version}}|$(VERSION)|g"
 
+
 deploy-kube-system:
 	kubectl apply -f ./kube-system/namespace.yaml
 	kubectl apply -f ./kube-system/kube-proxy.yaml
@@ -27,7 +48,11 @@ deploy-kube-system:
 	kubectl apply -f ./kube-system/kubernetes-dashboard.yaml
 	kubectl apply -f ./kube-system/kube-registry.yaml
 
-deploy-polykube: prep
+# prep-deploy creates a new secret, so we need to 
+# delete the deployment first, otherwise the existing redis/postgres
+# are using the stale secret and thus new deployments can't connect.
+# need to investigate restarting the redis/postgres on secret change?
+deploy-polykube: prep-deploy clean-polykube
 	kubectl apply -f $(TEMPDIR)/polykube/namespace.yaml
 	kubectl apply -f $(TEMPDIR)/polykube/redis.yaml
 	kubectl apply -f $(TEMPDIR)/polykube/postgres.yaml
@@ -40,6 +65,5 @@ clean-kube-system:
 	kubectl delete daemonset --namespace=kube-system kube-registry-proxy || true
 
 # lets us keep our external ips. deleting ns tears it all down
-clean-polykube:
-	$(eval NAMESPACE ?= polykube)
-	kubectl delete --namespace $(NAMESPACE) deployment aspnet-api frontend postgres redis
+clean-polykube: prep
+	kubectl delete --namespace $(NAMESPACE) deployment aspnet-api frontend postgres redis || true

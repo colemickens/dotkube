@@ -1,12 +1,11 @@
 .NOTPARALLEL:
 
 CURDIR = $(shell pwd)
-REPO ?= localhost:5000/
+REPO ?= localhost:5000
 VERSION ?= $(shell git describe --always --dirty)
-IMAGE_FINAL = polykube-aspnet-api:$(VERSION)
 IMAGE_BUILD = polykube-aspnet-api-builder
-IMAGE_DEVENV = docker.io/microsoft/dotnet:1.0.0-preview1
-IMAGE_NGINX = polykube-aspnet-nginx:$(VERSION)
+IMAGE_FINAL = $(REPO)/polykube-aspnet-api:$(VERSION)
+IMAGE_NGINX = $(REPO)/polykube-aspnet-nginx:$(VERSION)
 
 build:
 	dotnet restore -v Verbose
@@ -38,19 +37,17 @@ docker-run-aspnet-api:
 		-p 0.0.0.0:8000:8000 \
 		$(IMAGE_FINAL)
 
-docker-devenv:
+docker-devenv: docker-build-aspnet-api-builder
 	docker run -it \
 		-p 0.0.0.0:8000:8000 \
-		-v $(CURDIR):/opt/polykube \
+		-v $(CURDIR):/polykube \
 		-v $(CURDIR)/.nuget-cache:/root/.local/share/NuGet \
-		$(IMAGE_DEVENV) /bin/bash; true
+		$(IMAGE_BUILD) /bin/bash
 
 docker-push-aspnet-api: docker-build-aspnet-api
-	docker tag $(IMAGE_FINAL) $(REPO)$(IMAGE_FINAL)
-	docker push $(REPO)$(IMAGE_FINAL)
+	docker push $(IMAGE_FINAL)
 
 docker-push-aspnet-nginx: docker-build-aspnet-api-nginx
-	docker tag $(IMAGE_NGINX) $(REPO)$(IMAGE_NGINX)
-	docker push $(REPO)$(IMAGE_NGINX)
+	docker push $(IMAGE_NGINX)
 
 docker-push: docker-push-aspnet-api docker-push-aspnet-nginx

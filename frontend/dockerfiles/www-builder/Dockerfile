@@ -1,8 +1,8 @@
 FROM polykube-www-devenv
 
-ADD . /opt/polykube/
+ADD . /polykube/
 
-WORKDIR /opt/polykube
+WORKDIR /polykube
 
 RUN make build
 

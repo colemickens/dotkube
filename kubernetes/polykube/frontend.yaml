@@ -16,7 +16,7 @@ items:
       spec:
         containers:
         - name: frontend
-          image: {{repo}}polykube-www:{{version}}
+          image: {{repo}}/polykube-www:{{version}}
           imagePullPolicy: Always
           ports:
           - containerPort: 80

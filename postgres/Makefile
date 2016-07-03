@@ -1,9 +1,9 @@
 .NOTPARALLEL:
 
 CURDIR = $(shell pwd)
-REPO ?= localhost:5000/
+REPO ?= localhost:5000
 VERSION ?= $(shell git describe --always --dirty)
-IMAGE_FINAL = polykube-postgres:$(VERSION)
+IMAGE_FINAL = $(REPO)/polykube-postgres:$(VERSION)
 
 docker-build-postgres:
 	docker build -f ./dockerfiles/postgres/Dockerfile -t $(IMAGE_FINAL) .
@@ -14,5 +14,4 @@ docker-run-postgres:
 		$(IMAGE_FINAL)
 
 docker-push: docker-build-postgres
-	docker tag $(IMAGE_FINAL) $(REPO)$(IMAGE_FINAL)
-	docker push $(REPO)$(IMAGE_FINAL)
+	docker push $(IMAGE_FINAL)

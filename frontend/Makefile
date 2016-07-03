@@ -3,11 +3,11 @@
 .NOTPARALLEL:
 
 CURDIR = $(shell pwd)
-REPO ?= localhost:5000/
+REPO ?= localhost:5000
 VERSION ?= $(shell git describe --always --dirty)
-IMAGE_FINAL = polykube-www:$(VERSION)
 IMAGE_BUILD = polykube-www-builder
 IMAGE_DEVENV = polykube-www-devenv
+IMAGE_FINAL = $(REPO)/polykube-www:$(VERSION)
 
 build:
 	(\
@@ -56,9 +56,8 @@ docker-devenv: docker-build-www-devenv
 	docker run -it \
 		-p 0.0.0.0:9999:9999 \
 		-p 0.0.0.0:9998:9998 \
-		-v $(CURDIR):/opt/polykube \
+		-v $(CURDIR):/polykube \
 		$(IMAGE_DEVENV) /bin/bash; true
 
 docker-push: docker-build-www
-	docker tag $(IMAGE_FINAL) $(REPO)$(IMAGE_FINAL)
-	docker push $(REPO)$(IMAGE_FINAL)
+	docker push $(IMAGE_FINAL)
