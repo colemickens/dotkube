@@ -52,7 +52,6 @@ namespace Api
         {
             ensureDatabase(dataContext);
 
-            Console.WriteLine("env.EnvironmentName='{0}'", env.EnvironmentName);
             if (env.IsDevelopment()) {
                 Console.WriteLine("starting in development mode");
                 loggerFactory.AddDebug(LogLevel.Information);
@@ -98,7 +97,6 @@ namespace Api
                 case "memory":
                 default:
                 {
-                    Console.WriteLine("using in memory database.");
                     return options.UseInMemoryDatabase();
                 }
             }
