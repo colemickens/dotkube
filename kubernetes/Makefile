@@ -40,15 +40,31 @@ prep-deploy: prep
 	find "$(TEMPDIR)" -name "*.yaml" -print0 | xargs -0 sed -i -e "s|{{redis_password}}|$(REDIS_PASSWORD)|g"
 	find "$(TEMPDIR)" -name "*.yaml" -print0 | xargs -0 sed -i -e "s|{{version}}|$(VERSION)|g"
 
-
-deploy-kube-system:
+deploy-kube-system-core:
 	kubectl apply -f ./kube-system/namespace.yaml
 	kubectl apply -f ./kube-system/kube-proxy.yaml
 	kubectl apply -f ./kube-system/kube-dns.yaml
 	kubectl apply -f ./kube-system/kubernetes-dashboard.yaml
 	kubectl apply -f ./kube-system/kube-registry.yaml
 
-# prep-deploy creates a new secret, so we need to 
+deploy-kube-system-monitoring:
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/influxdb/grafana-service.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/influxdb/heapster-service.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/influxdb/influxdb-service.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/influxdb/heapster-controller.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/influxdb/influxdb-grafana-controller.yaml
+
+deploy-kube-system-logging:
+	kubectl apply -f https://gist.githubusercontent.com/colemickens/68cc04a19ed834c3f038cba0959e9e40/raw/9ef32f28efae8cbe0839c83a3d467fb1c77b13bc/fluentd-elasticsearch-v1-daemonset.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/kubernetes/master/cluster/addons/fluentd-elasticsearch/es-service.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/kubernetes/master/cluster/addons/fluentd-elasticsearch/es-controller.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/kubernetes/master/cluster/addons/fluentd-elasticsearch/kibana-service.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/kubernetes/master/cluster/addons/fluentd-elasticsearch/kibana-controller.yaml
+
+
+deploy-kube-system: deploy-kube-system-core deploy-kube-system-monitoring deploy-kube-system-logging
+
+# prep-deploy creates a new secret, so we need to
 # delete the deployment first, otherwise the existing redis/postgres
 # are using the stale secret and thus new deployments can't connect.
 # need to investigate restarting the redis/postgres on secret change?
