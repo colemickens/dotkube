@@ -12,7 +12,7 @@ import {MD_LIST_DIRECTIVES} from '@angular2-material/list';
 import {MD_CARD_DIRECTIVES} from '@angular2-material/card';
 import {MdInput} from '@angular2-material/input';
 import {MdCheckbox} from '@angular2-material/checkbox';
-import {MdRadioButton, MdRadioGroup, MdRadioDispatcher} from '@angular2-material/radio';
+import {MdRadioButton, MdRadioGroup} from '@angular2-material/radio';
 import {MdIcon, MdIconRegistry} from '@angular2-material/icon';
 
 @Component({
@@ -36,7 +36,6 @@ import {MdIcon, MdIconRegistry} from '@angular2-material/icon';
   providers: [
     HTTP_PROVIDERS,
     MdIconRegistry,
-    MdRadioDispatcher,
     CounterService
   ],
 })
