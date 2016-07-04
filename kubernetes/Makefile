@@ -75,6 +75,20 @@ deploy-polykube: prep-deploy clean-polykube
 	kubectl apply -f $(TEMPDIR)/polykube/frontend.yaml
 	kubectl apply -f $(TEMPDIR)/polykube/aspnet-api.yaml
 
+deploy-kube-lego: prep-deploy
+	kubectl apply -f kube-lego/default-http-backend-svc.yaml
+	kubectl apply -f kube-lego/default-http-backend-deployment.yaml
+	kubectl apply -f kube-lego/kube-lego-svc.yaml
+	kubectl apply -f kube-lego/kube-lego-configmap.yaml
+	kubectl apply -f kube-lego/kube-lego-deployment.yaml
+	kubectl apply -f kube-lego/nginx-configmap.yaml
+	kubectl apply -f kube-lego/nginx-deployment.yaml
+	kubectl apply -f kube-lego/nginx-svc.yaml
+	kubectl apply -f kube-lego/polykube-ingress-notls.yaml
+
+deploy-kube-lego-tls: prep-deploy
+	kubectl apply -f kube-lego/polykube-ingress-tls.yaml
+
 clean-kube-system:
 	kubectl delete deployment --namespace=kube-system kube-dns kube-registry kubernetes-dashboard || true
 	kubectl delete service --namespace=kube-system kube-dns kube-registry kubernetes-dashboard || true
