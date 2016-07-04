@@ -8,6 +8,11 @@ export const routes: RouterConfig = [
   ...CountersRoutes,
   ...AboutRoutes,
   ...GuestbookRoutes,
+  {
+    path: '',
+    redirectTo: '/about',
+    pathMatch: 'full'
+  }
 ];
 
 export const APP_ROUTER_PROVIDERS = [
