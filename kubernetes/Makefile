@@ -84,9 +84,8 @@ deploy-kube-lego: prep-deploy
 	kubectl apply -f kube-lego/nginx-configmap.yaml
 	kubectl apply -f kube-lego/nginx-deployment.yaml
 	kubectl apply -f kube-lego/nginx-svc.yaml
-	kubectl apply -f kube-lego/polykube-ingress-notls.yaml
-
-deploy-kube-lego-tls: prep-deploy
+	# not needed because we can just deploy the TLS version and then update the DNS and it will auto-fix itself
+	#kubectl apply -f kube-lego/polykube-ingress-notls.yaml
 	kubectl apply -f kube-lego/polykube-ingress-tls.yaml
 
 clean-kube-system:
