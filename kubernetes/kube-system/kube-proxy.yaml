@@ -21,8 +21,7 @@ items:
         hostNetwork: true
         containers:
         - name: kube-registry-proxy
-          image: docker.io/colemickens/hyperkube-amd64:v1.3.0-azure
-          #image: gcr.io/google_containers/kube-proxy:v1.2.4
+          image: gcr.io/google_containers/kube-proxy:v1.3.3
           securityContext:
             privileged: true
           command:
