@@ -21,7 +21,7 @@ items:
         hostNetwork: true
         containers:
         - name: kube-registry-proxy
-          image: gcr.io/google_containers/kube-proxy:v1.3.3
+          image: gcr.io/google_containers/hyperkube-amd64:v1.3.5
           securityContext:
             privileged: true
           command:
